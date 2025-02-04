@@ -38,7 +38,7 @@ CREATE TABLE locations(
   location_id INTEGER PRIMARY KEY NOT NULL,
   name VARCHAR(255),
   address VARCHAR(255),
-  phone_number VARCHAR(15) CHECK(length(phone_number == 8)), --VARCHAR chosen due to phone number inputs containing a '-'
+  phone_number VARCHAR(8) CHECK(length(phone_number == 8)), --VARCHAR chosen due to phone number inputs containing a '-'
   email VARCHAR(255) CHECK(email LIKE '%@%'),
   opening_hours VARCHAR(15) --Chosen VARCHAR as any date related datatype would not fit the input format
 );
@@ -115,25 +115,33 @@ VALUES
 CREATE TABLE equipment(
   equipment_id INTEGER PRIMARY KEY NOT NULL,
   name VARCHAR(255),
-  type VARCHAR(255),
+  type VARCHAR(255) CHECK(type == 'Cardio' OR type == 'Strength'),
   purchase_date DATE,
   last_maintenance_date DATE,
   next_maintenance_date DATE,
-  location_id INTEGER,
+  location_id INTEGER NOT NULL,
   FOREIGN KEY(location_id) REFERENCES locations(location_id) -- NOTE: Look into ON DELETE CASCADE
 );
 
 --Inserts for Equipment
-INSERT INTO staff (first_name, last_name, email, phone_number, position, hire_date, location_id)
+INSERT INTO equipment (name, type, purchase_date, last_maintenance_date, next_maintenance_date, location_id)
 VALUES 
-('David', 'Brown', 'david.b@fittrackpro.com', '555-4444', 'Trainer', '2024-11-10', 1),
-('Emma', 'Davis', 'emma.d@fittrackpro.com', '555-5555', 'Manager', '2024-11-15', 2),
-('Frank', 'Evans', 'frank.e@fittrackpro.com', '555-6666', 'Receptionist', '2024-12-10', 1),
-('Grace', 'Green', 'grace.g@fittrackpro.com', '555-7777', 'Trainer', '2024-12-20', 2),
-('Henry', 'Harris', 'henry.h@fittrackpro.com', '555-8888', 'Maintenance', '2025-01-05', 1),
-('Ivy', 'Irwin', 'ivy.i@fittrackpro.com', '555-9999', 'Trainer', '2025-01-01', 2),
-('Jack', 'Johnson', 'jack.j@fittrackpro.com', '555-0000', 'Manager', '2024-11-15', 1),
-('Karen', 'King', 'karen.k@fittrackpro.com', '555-1212', 'Trainer', '2024-12-01', 2);
+('Treadmill 1', 'Cardio', '2024-11-01', '2024-11-15', '2025-02-15', 1),
+('Treadmill 2', 'Cardio', '2024-11-02', '2024-11-20', '2025-02-20', 1),
+('Treadmill 3', 'Cardio', '2024-11-03', '2024-11-25', '2025-02-25', 2),
+('Treadmill 4', 'Cardio', '2024-11-04', '2024-11-30', '2025-02-28', 2),
+('Bench Press 1', 'Strength', '2024-11-05', '2024-12-01', '2025-03-01', 1),
+('Bench Press 2', 'Strength', '2024-11-06', '2024-12-05', '2025-03-05', 2),
+('Elliptical 1', 'Cardio', '2024-11-07', '2024-12-10', '2025-03-10', 1),
+('Elliptical 2', 'Cardio', '2024-11-08', '2024-12-15', '2025-03-15', 2),
+('Squat Rack 1', 'Strength', '2024-11-09', '2024-12-20', '2025-03-20', 1),
+('Squat Rack 2', 'Strength', '2024-11-10', '2024-12-25', '2025-03-25', 2),
+('Rowing Machine 1', 'Cardio', '2024-11-11', '2024-12-30', '2025-03-30', 1),
+('Rowing Machine 2', 'Cardio', '2024-11-12', '2025-01-01', '2025-04-01', 2),
+('Leg Press 1', 'Strength', '2024-11-13', '2025-01-05', '2025-04-05', 1),
+('Leg Press 2', 'Strength', '2024-11-14', '2025-01-10', '2025-04-10', 2),
+('Stationary Bike 1', 'Cardio', '2024-11-15', '2025-01-15', '2025-04-15', 1),
+('Stationary Bike 2', 'Cardio', '2024-11-16', '2025-01-20', '2025-04-20', 2);
 
 
 -- 5. classes
@@ -143,7 +151,7 @@ CREATE TABLE classes(
   description VARCHAR(255),
   capacity INTEGER,
   duration INTEGER,
-  location_id INTEGER,
+  location_id INTEGER NOT NULL,
   FOREIGN KEY(location_id) REFERENCES locations(location_id) -- NOTE: Look into ON DELETE CASCADE
 );
 
@@ -161,8 +169,8 @@ VALUES
 -- 6. class_schedule
 CREATE TABLE class_schedule(
   schedule_id INTEGER PRIMARY KEY NOT NULL,
-  class_id INTEGER,
-  staff_id INTEGER,
+  class_id INTEGER NOT NULL,
+  staff_id INTEGER NOT NULL,
   start_time DATETIME,
   end_time DATETIME,
   FOREIGN KEY(class_id) REFERENCES classes(class_id), --NOTE: Look into ON DELETE CASCADE
@@ -185,11 +193,11 @@ VALUES
 -- 7. memberships
 CREATE TABLE memberships(
   membership_id INTEGER PRIMARY KEY NOT NULL,
-  member_id INTEGER,
-  type VARCHAR(30),
+  member_id INTEGER NOT NULL,
+  type VARCHAR(30) CHECK(type == 'Premium' OR type == 'Basic'),
   start_date DATE,
   end_date DATE,
-  status VARCHAR(30),
+  status VARCHAR(30) CHECK(status == 'Active' OR status == 'Inactive'),
   FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
 );
 
@@ -215,8 +223,8 @@ VALUES
 -- 8. attendance
 CREATE TABLE attendance(
   attendance_id INTEGER PRIMARY KEY NOT NULL,
-  member_id INTEGER,
-  location_id INTEGER,
+  member_id INTEGER NOT NULL,
+  location_id INTEGER NOT NULL,
   check_in_time DATETIME,
   check_out_time DATETIME,
   FOREIGN KEY(member_id) REFERENCES members(member_id), --NOTE: Look into ON DELETE CASCADE
@@ -240,9 +248,11 @@ VALUES
 -- 9. class_attendance
 CREATE TABLE class_attendance(
   class_attendance_id INTEGER PRIMARY KEY NOT NULL,
-  schedule_id INTEGER,
-  member_id INTEGER,
-  attendance_status VARCHAR(50),
+  schedule_id INTEGER NOT NULL,
+  member_id INTEGER NOT NULL,
+  attendance_status VARCHAR(50) CHECK(attendance_status == 'Attended'
+                                     OR attendance_status == 'Unattended'
+                                     OR attendance_status == 'Registered'),
   FOREIGN KEY(schedule_id) REFERENCES class_schedule(schedule_id), --NOTE: Look into ON DELETE CASCADE
   FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
 );
@@ -270,11 +280,13 @@ VALUES
 -- 10. payments
 CREATE TABLE payments(
   payment_id INTEGER PRIMARY KEY NOT NULL,
-  member_id INTEGER,
-  amount FLOAT,
+  member_id INTEGER NOT NULL,
+  amount REAL CHECK(amount = Round(amount,2)),
   payment_date DATETIME,
-  payment_method VARCHAR(255),
-  payment_type VARCHAR(255),
+  payment_method VARCHAR(255) CHECK(payment_method == 'Credit Card' OR payment_method == 'Bank Transfer'
+                                    OR payment_method == 'PayPal' OR payment_method == 'Cash'),
+  payment_type VARCHAR(255) CHECK(payment_type == 'Monthly membership fee' 
+                                  OR payment_type == 'Day pass'),
   FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
 );
 
@@ -299,8 +311,8 @@ VALUES
 -- 11. personal_training_sessions
 CREATE TABLE personal_training_sessions(
   session_id INTEGER PRIMARY KEY NOT NULL,
-  member_id INTEGER,
-  staff_id INTEGER,
+  member_id INTEGER NOT NULL,
+  staff_id INTEGER NOT NULL,
   session_date DATE,
   start_time TIMESTAMP,
   end_time TIMESTAMP,
@@ -331,12 +343,12 @@ VALUES
 -- 12. member_health_metrics
 CREATE TABLE member_health_metrics(
   metric_id INTEGER PRIMARY KEY NOT NULL,
-  member_id INTEGER,
+  member_id INTEGER NOT NULL,
   measurement_date DATE,
-  weight FLOAT,
-  body_fat_percentage FLOAT,
-  muscle_mass FLOAT,
-  bmi FLOAT,
+  weight REAL CHECK(weight = Round(weight,1)),
+  body_fat_percentage REAL CHECK(body_fat_percentage = Round(body_fat_percentage,1)),
+  muscle_mass REAL CHECK(muscle_mass = Round(muscle_mass,1)),
+  bmi REAL CHECK(bmi = Round(bmi,1)),
   FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
 );
 
@@ -357,11 +369,12 @@ VALUES
 -- 13. equipment_maintenance_log
 CREATE TABLE equipment_maintenance_log(
   log_id INTEGER PRIMARY KEY NOT NULL,
-  equipment_id INTEGER,
+  equipment_id INTEGER NOT NULL,
   maintenance_date DATE,
   description TEXT,
-  staff_id INTEGER,
-  FOREIGN KEY(staff_id) REFERENCES staff(staff_id) --NOTE: Look into ON DELETE CASCADE
+  staff_id INTEGER NOT NULL,
+  FOREIGN KEY(staff_id) REFERENCES staff(staff_id), --NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(equipment_id) REFERENCES equipment(equipment_id)
 );
 
 --Inserts for Equipment Maintenance Log
