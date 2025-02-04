@@ -38,9 +38,9 @@ CREATE TABLE locations(
   location_id INTEGER PRIMARY KEY NOT NULL,
   name VARCHAR(255),
   address VARCHAR(255),
-  phone_number VARCHAR(15), --VARCHAR chosen due to phone number inputs containing a '-'
+  phone_number VARCHAR(15) CHECK(length(phone_number == 8)), --VARCHAR chosen due to phone number inputs containing a '-'
   email VARCHAR(255) CHECK(email LIKE '%@%'),
-  opening_hours VARCHAR(15) --Chosen VARCHAR as any date related datatype would not fit the input format
+  opening_hours VARCHAR(15), --Chosen VARCHAR as any date related datatype would not fit the input format
 );
 
 -- 2. members
@@ -48,12 +48,12 @@ CREATE TABLE members(
   member_id INTEGER PRIMARY KEY NOT NULL,
   first_name VARCHAR(255),
   last_name VARCHAR(255),
-  email VARCHAR(255) CHECK(email LIKE '%'), --Checks to see if it is a valid email format
-  phone_number VARCHAR(255), 
-  date_of_birth DATE, 
-  join_date DATE,
+  email VARCHAR(255) CHECK(email LIKE '%@%'), --Checks to see if it is a valid email format
+  phone_number VARCHAR(255) CHECK(length(phone_number == 8)), 
+  date_of_birth DATE CHECK(date_of_birth < join_date), 
+  join_date DATE CHECK(join_date > date_of_birth),
   emergency_contact_name VARCHAR(255),
-  emergency_contact_phone VARCHAR(255) -- VARCHAR chosen as phone numbers contain a '-' and would not be excepted by an INTEGER data type
+  emergency_contact_phone VARCHAR(255) CHECK(length(emergency_contact_phone) == 8) -- VARCHAR chosen as phone numbers contain a '-' and would not be excepted by an INTEGER data type
 );
 
 -- 3. staff
@@ -62,8 +62,11 @@ CREATE TABLE staff(
   first_name VARCHAR(255),
   last_name VARCHAR(255),
   email VARCHAR(255) CHECK(email LIKE '%@%'),
-  phone_number VARCHAR(255),
-  position VARCHAR(255), --NOTE: Look to see if you want to add specific checks for the 3 possible inputs
+  phone_number VARCHAR(255) CHECK(length(phone_number) == 8),
+  position VARCHAR(255) CHECK(position == 'Trainer'
+                        OR position == 'Manager' 
+                        OR position == 'Receptionist'
+                        OR position == 'Maintenance'),
   hire_date DATE,
   location_id INTEGER,
   FOREIGN KEY(location_id) REFERENCES locations(location_id) --NOTE: Look into ON DELETE CASCADE
