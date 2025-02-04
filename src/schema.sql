@@ -17,19 +17,19 @@ PRAGMA foreign_keys = ON;
 
 
 --DROP TABLES - Helps with testing
-DROP TABLE IF EXISTS locations
-DROP TABLE IF EXISTS members
-DROP TABLE IF EXISTS staff
-DROP TABLE IF EXISTS equipment
-DROP TABLE IF EXISTS classes
-DROP TABLE IF EXISTS class_schedule
-DROP TABLE IF EXISTS memberships
-DROP TABLE IF EXISTS attendance
-DROP TABLE IF EXISTS class_attendance
-DROP TABLE IF EXISTS payments
-DROP TABLE IF EXISTS personal_training_sessions
-DROP TABLE IF EXISTS member_health_metrics
-DROP TABLE IF EXISTS equipment_maintenance_log
+DROP TABLE IF EXISTS locations;
+DROP TABLE IF EXISTS members;
+DROP TABLE IF EXISTS staff;
+DROP TABLE IF EXISTS equipment;
+DROP TABLE IF EXISTS classes;
+DROP TABLE IF EXISTS class_schedule;
+DROP TABLE IF EXISTS memberships;
+DROP TABLE IF EXISTS attendance;
+DROP TABLE IF EXISTS class_attendance;
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS personal_training_sessions;
+DROP TABLE IF EXISTS member_health_metrics;
+DROP TABLE IF EXISTS equipment_maintenance_log;
 
 
 -- TODO: Create the following tables:
@@ -40,7 +40,7 @@ CREATE TABLE locations(
   address VARCHAR(255),
   phone_number VARCHAR(15) CHECK(length(phone_number == 8)), --VARCHAR chosen due to phone number inputs containing a '-'
   email VARCHAR(255) CHECK(email LIKE '%@%'),
-  opening_hours VARCHAR(15), --Chosen VARCHAR as any date related datatype would not fit the input format
+  opening_hours VARCHAR(15) --Chosen VARCHAR as any date related datatype would not fit the input format
 );
 
 -- 2. members
@@ -91,6 +91,7 @@ CREATE TABLE classes(
   description VARCHAR(255),
   capacity INTEGER,
   duration INTEGER,
+  location_id INTEGER,
   FOREIGN KEY(location_id) REFERENCES locations(location_id) -- NOTE: Look into ON DELETE CASCADE
 );
 
@@ -112,8 +113,8 @@ CREATE TABLE memberships(
   type VARCHAR(30),
   start_date DATE,
   end_date DATE,
-  status VARCHAR(30)
-  FOREIGN KEY member_id REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
+  status VARCHAR(30),
+  FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
 );
 
 -- 8. attendance
