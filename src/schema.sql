@@ -88,10 +88,7 @@ CREATE TABLE staff(
   last_name VARCHAR(255),
   email VARCHAR(255) CHECK(email LIKE '%@%'),
   phone_number VARCHAR(255) CHECK(length(phone_number) == 8),
-  position VARCHAR(255) CHECK(position == 'Trainer'
-                        OR position == 'Manager' 
-                        OR position == 'Receptionist'
-                        OR position == 'Maintenance'),
+  position VARCHAR(255) CHECK(position IN ('Trainer', 'Manager', 'Receptionist', 'Maintenance')),
   hire_date DATE,
   location_id INTEGER,
   FOREIGN KEY(location_id) REFERENCES locations(location_id) --NOTE: Look into ON DELETE CASCADE
@@ -115,7 +112,7 @@ VALUES
 CREATE TABLE equipment(
   equipment_id INTEGER PRIMARY KEY NOT NULL,
   name VARCHAR(255),
-  type VARCHAR(255) CHECK(type == 'Cardio' OR type == 'Strength'),
+  type VARCHAR(255) CHECK(type IN ('Cardio', 'Strength')),
   purchase_date DATE,
   last_maintenance_date DATE,
   next_maintenance_date DATE,
@@ -194,10 +191,10 @@ VALUES
 CREATE TABLE memberships(
   membership_id INTEGER PRIMARY KEY NOT NULL,
   member_id INTEGER NOT NULL,
-  type VARCHAR(30) CHECK(type == 'Premium' OR type == 'Basic'),
+  type VARCHAR(30) CHECK(type IN ('Premium', 'Basic')),
   start_date DATE,
   end_date DATE,
-  status VARCHAR(30) CHECK(status == 'Active' OR status == 'Inactive'),
+  status VARCHAR(30) CHECK(status IN ('Active', 'Inactive')),
   FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
 );
 
@@ -250,9 +247,7 @@ CREATE TABLE class_attendance(
   class_attendance_id INTEGER PRIMARY KEY NOT NULL,
   schedule_id INTEGER NOT NULL,
   member_id INTEGER NOT NULL,
-  attendance_status VARCHAR(50) CHECK(attendance_status == 'Attended'
-                                     OR attendance_status == 'Unattended'
-                                     OR attendance_status == 'Registered'),
+  attendance_status VARCHAR(50) CHECK(attendance_status IN ('Attended', 'Unattended', 'Registered')),
   FOREIGN KEY(schedule_id) REFERENCES class_schedule(schedule_id), --NOTE: Look into ON DELETE CASCADE
   FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
 );
@@ -283,10 +278,8 @@ CREATE TABLE payments(
   member_id INTEGER NOT NULL,
   amount REAL CHECK(amount = Round(amount,2)),
   payment_date DATETIME,
-  payment_method VARCHAR(255) CHECK(payment_method == 'Credit Card' OR payment_method == 'Bank Transfer'
-                                    OR payment_method == 'PayPal' OR payment_method == 'Cash'),
-  payment_type VARCHAR(255) CHECK(payment_type == 'Monthly membership fee' 
-                                  OR payment_type == 'Day pass'),
+  payment_method VARCHAR(255) CHECK(payment_method IN ('Credit Card', 'PayPal', 'Bank Transfer', 'Cash')),
+  payment_type VARCHAR(255) CHECK(payment_type IN ('Monthly membership fee', 'Day pass')),
   FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
 );
 
