@@ -271,7 +271,9 @@ VALUES
 (6, 1, 'Registered'),
 (7, 2, 'Registered'),
 (8, 3, 'Registered'),
-(1, 8, 'Registered');
+(1, 8, 'Registered'),
+(1, 13, 'Attended'),
+(1, 7, 'Registered');
 
 -- 10. payments
 CREATE TABLE payments(
