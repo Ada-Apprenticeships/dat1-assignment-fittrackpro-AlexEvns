@@ -336,6 +336,7 @@ VALUES
 (11, 7, '2025-02-18', '12:00:00', '13:00:00', 'Midday flexibility workout'),
 (13, 1, '2025-02-20', '15:00:00', '16:00:00', 'Afternoon endurance training');
 
+
 -- 12. member_health_metrics
 CREATE TABLE member_health_metrics(
   metric_id INTEGER PRIMARY KEY NOT NULL,
