@@ -57,5 +57,5 @@ WHERE number_not_registered = (SELECT MIN(number_not_registered) FROM count);
 -- 6. Calculate the percentage of members who have attended at least one class
 -- TODO: Write a query to calculate the percentage of members who have attended at least one class
 
-
+ 
 
