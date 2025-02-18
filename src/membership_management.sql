@@ -11,7 +11,8 @@
 -- TODO: Write a query to list all active memberships
 SELECT m.member_id, m.first_name, m.last_name, ms.type, m.join_date
 FROM members m 
-INNER JOIN memberships ms ON m.member_id = ms.member_id;
+INNER JOIN memberships ms ON m.member_id = ms.member_id
+WHERE ms.status = 'Active';
 
 -- 2. Calculate the average duration of gym visits for each membership type
 -- TODO: Write a query to calculate the average duration of gym visits for each membership type
@@ -35,4 +36,4 @@ GROUP BY t.type;
 SELECT m.member_id, m.first_name, m.last_name, m.email, ms.end_date
 FROM members m 
 INNER JOIN memberships ms ON m.member_id = ms.member_id
-WHERE ms.end_date BETWEEN datetime('now', 'localtime') AND datetime('now', '365 days')
+WHERE ms.end_date BETWEEN datetime('now', 'localtime') AND datetime('now', '365 days') AND ms.status = 'Active'

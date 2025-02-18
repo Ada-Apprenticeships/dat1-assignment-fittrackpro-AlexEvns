@@ -8,6 +8,9 @@
 
 -- 1. Record a member's gym visit
 -- TODO: Write a query to record a member's gym visit
+INSERT INTO attendance (member_id, location_id, check_in_time)
+VALUES 
+(7, 1, datetime('now'));
 
 -- 2. Retrieve a member's attendance history
 -- TODO: Write a query to retrieve a member's attendance history
