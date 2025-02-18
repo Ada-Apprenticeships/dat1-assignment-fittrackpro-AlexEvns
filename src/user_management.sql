@@ -21,7 +21,7 @@ WHERE member_id = 5;
 
 -- 3. Count total number of members
 -- TODO: Write a query to count the total number of members
-SELECT COUNT(member_id) AS total_no_members
+SELECT COUNT(*) AS total_no_members
 FROM members;
 
 
@@ -57,6 +57,14 @@ WHERE number_not_registered = (SELECT MIN(number_not_registered) FROM registrati
 
 -- 6. Calculate the percentage of members who have attended at least one class
 -- TODO: Write a query to calculate the percentage of members who have attended at least one class
+WITH temp_table AS (
+  SELECT m.member_id, COUNT(m.member_id) as member_reg_count
+  FROM members m 
+  INNER JOIN class_attendance a ON m.member_id = a.member_id
+  WHERE a.attendance_status = 'Attended'
+)
 
- 
+SELECT (t.member_reg_count * 1.0 / COUNT(m.member_id)) * 100 AS attend_percent
+FROM temp_table t 
+RIGHT JOIN members m ON m.member_id = t.member_id
 
