@@ -223,7 +223,7 @@ CREATE TABLE attendance(
   member_id INTEGER NOT NULL,
   location_id INTEGER NOT NULL,
   check_in_time DATETIME,
-  check_out_time DATETIME,
+  check_out_time DATETIME DEFAULT 'in_session',
   FOREIGN KEY(member_id) REFERENCES members(member_id), --NOTE: Look into ON DELETE CASCADE
   FOREIGN KEY(location_id) REFERENCES locations(location_id) --NOTE: Look into ON DELETE CASCADE
 );
