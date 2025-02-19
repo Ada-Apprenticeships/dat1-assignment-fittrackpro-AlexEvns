@@ -15,9 +15,9 @@ VALUES
 
 -- 2. Retrieve a member's attendance history
 -- TODO: Write a query to retrieve a member's attendance history
-SELECT STRFTIME('%F', check_in_time) as vist_date,
-       STRFTIME('%R', check_in_time) as check_in_time,
-       STRFTIME('%R', check_out_time) as check_out_time
+SELECT STRFTIME('%F', check_in_time) AS vist_date,
+       STRFTIME('%R', check_in_time) AS check_in_time,
+       STRFTIME('%R', check_out_time) AS check_out_time
 FROM attendance a 
 INNER JOIN members m ON m.member_id = a.member_id AND m.member_id = '5';
 
@@ -39,8 +39,9 @@ ORDER BY visit_count DESC LIMIT 1;
 
 -- 4. Calculate the average daily attendance for each location
 -- TODO: Write a query to calculate the average daily attendance for each location
-WITH temp_table AS (
-  SELECT COUNT(attendance_id) as attendence_count, location_id
+WITH temp_table AS 
+(
+  SELECT COUNT(attendance_id) AS attendence_count, location_id
   FROM attendance
   GROUP BY STRFTIME('%d', check_in_time)
 )

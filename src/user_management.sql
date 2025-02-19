@@ -28,7 +28,7 @@ FROM members;
 -- 4. Find member with the most class registrations
 -- TODO: Write a query to find the member with the most class registrations
 WITH registered_count AS (
-  SELECT m.member_id, m.first_name, m.last_name, COUNT(m.member_id) as number_registered
+  SELECT m.member_id, m.first_name, m.last_name, COUNT(m.member_id) AS number_registered
   FROM members m 
   LEFT JOIN class_attendance ca ON m.member_id = ca.member_id
   WHERE attendance_status = 'Registered'
@@ -44,13 +44,19 @@ WHERE number_registered = (SELECT MAX(number_registered) FROM registered_count);
 -- 5. Find member with the least class registrations
 -- TODO: Write a query to find the member with the least class registrations
 WITH registration_count AS (
-  SELECT m.member_id, m.first_name, m.last_name, COUNT(ca.member_id) AS number_not_registered
+  SELECT m.member_id,
+         m.first_name, 
+         m.last_name, 
+         COUNT(ca.member_id) AS number_not_registered
   FROM members m
   LEFT JOIN class_attendance ca ON m.member_id = ca.member_id 
   GROUP BY m.member_id
 )
 
-SELECT member_id, first_name, last_name, number_not_registered
+SELECT member_id, 
+       first_name, 
+       last_name, 
+       number_not_registered
 FROM registration_count c
 WHERE number_not_registered = (SELECT MIN(number_not_registered) FROM registration_count);
 
@@ -58,7 +64,8 @@ WHERE number_not_registered = (SELECT MIN(number_not_registered) FROM registrati
 -- 6. Calculate the percentage of members who have attended at least one class
 -- TODO: Write a query to calculate the percentage of members who have attended at least one class
 WITH temp_table AS (
-  SELECT m.member_id, COUNT(m.member_id) as member_reg_count
+  SELECT m.member_id, 
+         COUNT(m.member_id) AS member_reg_count
   FROM members m 
   INNER JOIN class_attendance a ON m.member_id = a.member_id
   WHERE a.attendance_status = 'Attended'

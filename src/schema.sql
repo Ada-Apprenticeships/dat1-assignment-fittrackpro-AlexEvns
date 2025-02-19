@@ -43,11 +43,13 @@ CREATE TABLE locations(
   opening_hours VARCHAR(15) --Chosen VARCHAR as any date related datatype would not fit the input format
 );
 
--- Inserts for Locations
+-- TEST DATA FOR LOCATIONS
 INSERT INTO locations (name, address, phone_number, email, opening_hours)
 VALUES 
 ('Downtown Fitness', '123 Main St, Cityville', '555-1234', 'downtown@fittrackpro.com', '6:00-22:00'),
 ('Suburb Gym', '456 Oak Rd, Townsburg', '555-5678', 'suburb@fittrackpro.com', '5:00-23:00');
+-----------------------------------------------------------------------------------------------------------------
+
 
 -- 2. members
 CREATE TABLE members(
@@ -62,7 +64,7 @@ CREATE TABLE members(
   emergency_contact_phone VARCHAR(255) CHECK(length(emergency_contact_phone) == 8) -- VARCHAR chosen as phone numbers contain a '-' and would not be excepted by an INTEGER data type
 );
 
---Inserts for Members
+-- TEST DATA FOR MEMBERS
 INSERT INTO members (first_name, last_name, email, phone_number, date_of_birth, join_date, emergency_contact_name, emergency_contact_phone)
 VALUES 
 ('Alice', 'Johnson', 'alice.j@email.com', '555-1111', '1990-05-15', '2024-11-10', 'Bob Johnson', '555-1112'),
@@ -80,6 +82,8 @@ VALUES
 ('Mia', 'Thomas', 'mia.t@email.com', '555-1717', '1991-11-30', '2025-01-10', 'Noah Thomas', '555-1718'),
 ('Noah', 'Roberts', 'noah.r@email.com', '555-1919', '1987-04-25', '2025-01-15', 'Olivia Roberts', '555-1920'),
 ('Olivia', 'Clark', 'olivia.c@email.com', '555-2121', '1993-09-08', '2025-01-20', 'Peter Clark', '555-2122');
+-----------------------------------------------------------------------------------------------------------------------------
+
 
 -- 3. staff
 CREATE TABLE staff(
@@ -89,13 +93,13 @@ CREATE TABLE staff(
   email VARCHAR(255) CHECK(email LIKE '%@%'),
   phone_number VARCHAR(255) CHECK(length(phone_number) == 8),
   position VARCHAR(255) CHECK(position IN ('Trainer', 'Manager', 'Receptionist', 'Maintenance')),
-  hire_date DATE,
+  hire_date DATE CHECK(hire_date REGEXP '\d{4}-\d{2}-\d{2}'),
   location_id INTEGER,
-  FOREIGN KEY(location_id) REFERENCES locations(location_id) --NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(location_id) REFERENCES locations(location_id) ON DELETE CASCADE
 );
 
 
---Inserts for Staff
+-- TEST DATA FOR STAFF
 INSERT INTO staff (first_name, last_name, email, phone_number, position, hire_date, location_id)
 VALUES 
 ('David', 'Brown', 'david.b@fittrackpro.com', '555-4444', 'Trainer', '2024-11-10', 1),
@@ -106,6 +110,8 @@ VALUES
 ('Ivy', 'Irwin', 'ivy.i@fittrackpro.com', '555-9999', 'Trainer', '2025-01-01', 2),
 ('Jack', 'Johnson', 'jack.j@fittrackpro.com', '555-0000', 'Manager', '2024-11-15', 1),
 ('Karen', 'King', 'karen.k@fittrackpro.com', '555-1212', 'Trainer', '2024-12-01', 2);
+------------------------------------------------------------------------------------------------------------------
+
 
 
 -- 4. equipment
@@ -114,13 +120,13 @@ CREATE TABLE equipment(
   name VARCHAR(255),
   type VARCHAR(255) CHECK(type IN ('Cardio', 'Strength')),
   purchase_date DATE,
-  last_maintenance_date DATE,
-  next_maintenance_date DATE,
+  last_maintenance_date DATE CHECK(last_maintenance_date REGEXP '\d{4}-\d{2}-\d{2}'),
+  next_maintenance_date DATE CHECK(next_maintenance_date REGEXP '\d{4}-\d{2}-\d{2}'),
   location_id INTEGER NOT NULL,
-  FOREIGN KEY(location_id) REFERENCES locations(location_id) -- NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(location_id) REFERENCES locations(location_id) ON DELETE CASCADE
 );
 
---Inserts for Equipment
+-- TEST DATA FOR EQUIPMENT
 INSERT INTO equipment (name, type, purchase_date, last_maintenance_date, next_maintenance_date, location_id)
 VALUES 
 ('Treadmill 1', 'Cardio', '2024-11-01', '2024-11-15', '2025-02-15', 1),
@@ -139,6 +145,8 @@ VALUES
 ('Leg Press 2', 'Strength', '2024-11-14', '2025-01-10', '2025-04-10', 2),
 ('Stationary Bike 1', 'Cardio', '2024-11-15', '2025-01-15', '2025-04-15', 1),
 ('Stationary Bike 2', 'Cardio', '2024-11-16', '2025-01-20', '2025-04-20', 2);
+-------------------------------------------------------------------------------------------------------------------
+
 
 
 -- 5. classes
@@ -149,10 +157,10 @@ CREATE TABLE classes(
   capacity INTEGER,
   duration INTEGER,
   location_id INTEGER NOT NULL,
-  FOREIGN KEY(location_id) REFERENCES locations(location_id) -- NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(location_id) REFERENCES locations(location_id) ON DELETE CASCADE
 );
 
---Inserts for Classes
+-- TEST DATA FOR CLASSES
 INSERT INTO classes (name, description, capacity, duration, location_id)
 VALUES 
 ('Yoga Basics', 'Introductory yoga class', 20, 60, 1),
@@ -161,20 +169,20 @@ VALUES
 ('Pilates', 'Core-strengthening exercises', 15, 55, 2),
 ('Zumba', 'Dance-based cardio workout', 25, 60, 1),
 ('Strength Training', 'Weight-based resistance training', 12, 45, 2);
-
+-------------------------------------------------------------------------------------------------------
 
 -- 6. class_schedule
 CREATE TABLE class_schedule(
   schedule_id INTEGER PRIMARY KEY NOT NULL,
   class_id INTEGER NOT NULL,
   staff_id INTEGER NOT NULL,
-  start_time DATETIME,
-  end_time DATETIME,
-  FOREIGN KEY(class_id) REFERENCES classes(class_id), --NOTE: Look into ON DELETE CASCADE
-  FOREIGN KEY(staff_id) REFERENCES staff(staff_id) --NOTE: Look into ON DELETE CASCADE
+  start_time DATETIME CHECK(start_time REGEXP '[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]'),
+  end_time DATETIME CHECK(end_time REGEXP '[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]'),
+  FOREIGN KEY(class_id) REFERENCES classes(class_id) ON DELETE CASCADE,
+  FOREIGN KEY(staff_id) REFERENCES staff(staff_id) ON DELETE CASCADE
 );
 
---Inserts for Class Schedule
+-- TEST DATA FOR CLASS_SCHEDULE
 INSERT INTO class_schedule (class_id, staff_id, start_time, end_time)
 VALUES 
 (1, 1, '2024-11-01 10:00:00', '2024-11-01 11:00:00'),
@@ -187,18 +195,23 @@ VALUES
 (5, 8, '2025-02-01 19:00:00', '2025-02-01 20:00:00'),
 (5, 4, '2025-02-15 09:00:00', '2025-02-15 10:00:00');
 
+--EDGE CASE
+--(5, 4, '2025-02-105 090:000:000', '20250-02-15 100:00:0000');
+--------------------------------------------------------------------------------------------------------------
+
+
 -- 7. memberships
 CREATE TABLE memberships(
   membership_id INTEGER PRIMARY KEY NOT NULL,
   member_id INTEGER NOT NULL,
   type VARCHAR(30) CHECK(type IN ('Premium', 'Basic')),
-  start_date DATE,
-  end_date DATE,
+  start_date DATE CHECK(start_date REGEXP '\d{4}-\d{2}-\d{2}'),
+  end_date DATE CHECK(start_date REGEXP '\d{4}-\d{2}-\d{2}'),
   status VARCHAR(30) CHECK(status IN ('Active', 'Inactive')),
-  FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
---Inserts for Memberships
+-- TEST DATA FOR MEMBERSHIPS
 INSERT INTO memberships (member_id, type, start_date, end_date, status)
 VALUES
 (1, 'Premium', '2024-11-01', '2025-10-31', 'Active'),
@@ -217,18 +230,23 @@ VALUES
 (14, 'Basic', '2025-01-05', '2026-01-04', 'Inactive'),
 (15, 'Premium', '2025-01-10', '2026-01-09', 'Active');
 
+-- EDGE CASE
+--(16, 'Premium', '20250-010-100', '2026-01-09', 'Active');
+---------------------------------------------------------------------------------------------
+
+
 -- 8. attendance
 CREATE TABLE attendance(
   attendance_id INTEGER PRIMARY KEY NOT NULL,
   member_id INTEGER NOT NULL,
   location_id INTEGER NOT NULL,
-  check_in_time DATETIME,
+  check_in_time DATETIME CHECK(check_in_time REGEXP '[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]'),
   check_out_time DATETIME DEFAULT 'in_session',
-  FOREIGN KEY(member_id) REFERENCES members(member_id), --NOTE: Look into ON DELETE CASCADE
-  FOREIGN KEY(location_id) REFERENCES locations(location_id) --NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(member_id) REFERENCES members(member_id) ON DELETE CASCADE,
+  FOREIGN KEY(location_id) REFERENCES locations(location_id) ON DELETE CASCADE
 );
 
---Inserts for Attendance
+-- TEST DATA FOR ATTENDANCE
 INSERT INTO attendance (member_id, location_id, check_in_time, check_out_time)
 VALUES 
 (1, 1, '2024-11-01 09:00:00', '2024-11-01 10:30:00'),
@@ -242,17 +260,23 @@ VALUES
 (9, 1, '2025-01-25 14:30:00', '2025-01-25 16:00:00'),
 (10, 2, '2025-01-28 19:00:00', '2025-01-28 20:30:00');
 
+--EDGE CASE
+--(10, 2, '2025-01-28 19:00:00', '2025-010-28 20:300:00');
+--(10, 2, '2025-01-28 19:00:00', '');
+--------------------------------------------------------------------------------------------------  
+
+
 -- 9. class_attendance
 CREATE TABLE class_attendance(
   class_attendance_id INTEGER PRIMARY KEY NOT NULL,
   schedule_id INTEGER NOT NULL,
   member_id INTEGER NOT NULL,
   attendance_status VARCHAR(50) CHECK(attendance_status IN ('Attended', 'Unattended', 'Registered')),
-  FOREIGN KEY(schedule_id) REFERENCES class_schedule(schedule_id), --NOTE: Look into ON DELETE CASCADE
-  FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(schedule_id) REFERENCES class_schedule(schedule_id) ON DELETE CASCADE,
+  FOREIGN KEY(member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
---Inserts for Class Attendance
+-- TEST DATA FOR CLASS_ATTENDANCE
 INSERT INTO class_attendance (schedule_id, member_id, attendance_status)
 VALUES 
 (1, 1, 'Attended'),
@@ -274,19 +298,21 @@ VALUES
 (1, 8, 'Registered'),
 (1, 13, 'Attended'),
 (1, 7, 'Registered');
+------------------------------------------------------------------------------------------------
+
 
 -- 10. payments
 CREATE TABLE payments(
   payment_id INTEGER PRIMARY KEY NOT NULL,
   member_id INTEGER NOT NULL,
   amount REAL CHECK(amount = Round(amount,2)),
-  payment_date DATETIME,
+  payment_date DATETIME CHECK(payment_date REGEXP '[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]'),
   payment_method VARCHAR(255) CHECK(payment_method IN ('Credit Card', 'PayPal', 'Bank Transfer', 'Cash')),
   payment_type VARCHAR(255) CHECK(payment_type IN ('Monthly membership fee', 'Day pass')),
-  FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
---Inserts for Payments
+-- TEST DATA FOR PAYMENTS
 INSERT INTO payments (member_id, amount, payment_date, payment_method, payment_type)
 VALUES 
 (1, 50.00, '2024-11-01 10:00:00', 'Credit Card', 'Monthly membership fee'),
@@ -303,21 +329,23 @@ VALUES
 (12, 15.00, '2025-01-16 10:30:00', 'Credit Card', 'Day pass'),
 (13, 15.00, '2025-01-17 14:00:00', 'Cash', 'Day pass'),
 (14, 15.00, '2025-01-18 11:15:00', 'Credit Card', 'Day pass');
+-----------------------------------------------------------------------------------------------
+
 
 -- 11. personal_training_sessions
 CREATE TABLE personal_training_sessions(
   session_id INTEGER PRIMARY KEY NOT NULL,
   member_id INTEGER NOT NULL,
   staff_id INTEGER NOT NULL,
-  session_date DATE,
+  session_date DATE CHECK(session_date REGEXP '\d{4}-\d{2}-\d{2}'),
   start_time TIMESTAMP,
   end_time TIMESTAMP,
-  notes TEXT,
-  FOREIGN KEY(member_id) REFERENCES members(member_id), --NOTE: Look into ON DELETE CASCADE
-  FOREIGN KEY(staff_id) REFERENCES staff(staff_id) --NOTE: Look into ON DELETE CASCADE
+  notes TEXT DEFAULT 'NO NOTES',
+  FOREIGN KEY(member_id) REFERENCES members(member_id) ON DELETE CASCADE,
+  FOREIGN KEY(staff_id) REFERENCES staff(staff_id) ON DELETE CASCADE
 );
 
---Inserts for Personal Training Sessions
+-- TEST DATA FOR PERSONAL_TRAINING_SESSIONS
 INSERT INTO personal_training_sessions (member_id, staff_id, session_date, start_time, end_time, notes)
 VALUES 
 (1, 1, '2024-11-05', '10:00:00', '11:00:00', 'Focus on upper body strength'),
@@ -336,20 +364,24 @@ VALUES
 (11, 7, '2025-02-18', '12:00:00', '13:00:00', 'Midday flexibility workout'),
 (13, 1, '2025-02-20', '15:00:00', '16:00:00', 'Afternoon endurance training');
 
+-- EDGE CASE
+--(13, 1, '2025-02-200', '15:00:00', '16:00:00', 'Afternoon endurance training');
+--------------------------------------------------------------------------------------------------------
+
 
 -- 12. member_health_metrics
 CREATE TABLE member_health_metrics(
   metric_id INTEGER PRIMARY KEY NOT NULL,
   member_id INTEGER NOT NULL,
-  measurement_date DATE,
+  measurement_date DATE CHECK(measurement_date REGEXP '\d{4}-\d{2}-\d{2}'),
   weight REAL CHECK(weight = Round(weight,1)),
   body_fat_percentage REAL CHECK(body_fat_percentage = Round(body_fat_percentage,1)),
   muscle_mass REAL CHECK(muscle_mass = Round(muscle_mass,1)),
   bmi REAL CHECK(bmi = Round(bmi,1)),
-  FOREIGN KEY(member_id) REFERENCES members(member_id) --NOTE: Look into ON DELETE CASCADE
+  FOREIGN KEY(member_id) REFERENCES members(member_id) ON DELETE CASCADE
 );
 
---Inserts for Member Health Metrics
+-- TEST DATA FOR HEALTH METRICS
 INSERT INTO member_health_metrics (member_id, measurement_date, weight, body_fat_percentage, muscle_mass, bmi)
 VALUES 
 (1, '2024-11-01', 70.5, 22.0, 35.0, 23.5),
@@ -362,19 +394,21 @@ VALUES
 (8, '2025-01-25', 78.0, 19.0, 39.0, 24.2),
 (9, '2025-01-28', 72.5, 21.0, 36.0, 23.2),
 (10, '2025-01-28', 85.0, 16.0, 43.0, 25.0);
+-------------------------------------------------------------------------------------------------------------------------
+
 
 -- 13. equipment_maintenance_log
 CREATE TABLE equipment_maintenance_log(
   log_id INTEGER PRIMARY KEY NOT NULL,
   equipment_id INTEGER NOT NULL,
-  maintenance_date DATE,
-  description TEXT,
+  maintenance_date DATE CHECK(maintenance_date REGEXP '\d{4}-\d{2}-\d{2}'),
+  description TEXT DEFAULT 'NO DESC',
   staff_id INTEGER NOT NULL,
-  FOREIGN KEY(staff_id) REFERENCES staff(staff_id), --NOTE: Look into ON DELETE CASCADE
-  FOREIGN KEY(equipment_id) REFERENCES equipment(equipment_id)
+  FOREIGN KEY(staff_id) REFERENCES staff(staff_id) ON DELETE CASCADE,
+  FOREIGN KEY(equipment_id) REFERENCES equipment(equipment_id) ON DELETE CASCADE
 );
 
---Inserts for Equipment Maintenance Log
+-- TEST DATA FOR EQUIPMENT_MAINTENCE_LOG
 INSERT INTO equipment_maintenance_log (equipment_id, maintenance_date, description, staff_id)
 VALUES 
 (1, '2024-11-15', 'Routine maintenance and belt adjustment', 1),
@@ -387,6 +421,3 @@ VALUES
 (8, '2025-01-05', 'Display repair and sensor calibration', 8),
 (9, '2025-01-20', 'Frame inspection and tightening', 1),
 (10, '2025-01-25', 'Safety features check and padding replacement', 2);
-
--- After creating the tables, you can import the sample data using:
--- `.read data/sample_data.sql` in a sql file or `npm run import` in the terminal
