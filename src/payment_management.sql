@@ -17,7 +17,7 @@ VALUES
 -- TODO: Write a query to calculate total revenue from membership fees for each month of the current year
 SELECT SUBSTR(payment_date, 6, 2) AS month, SUM(amount) as total_revenue
 FROM payments
-WHERE payment_type = 'Monthly Membership Fee' 
+WHERE payment_type = 'Monthly membership fee' AND SUBSTR(payment_date, 1,4) = '2024'
 GROUP BY month;
 
 -- 3. Find all day pass purchases
